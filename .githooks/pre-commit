@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+changed=$(git diff --cached --name-only)
+[ -z "$changed" ] && exit 0
+
+# ponytail: checks the working tree, not the staged snapshot. Partial stages (git add -p) can slip through, CI catches them.
+if grep -qE '\.go$|^go\.(mod|sum)$' <<<"$changed"; then
+  go_files=$(git diff --cached --name-only --diff-filter=ACMR -- '*.go')
+  if [ -n "$go_files" ]; then
+    unformatted=$(gofmt -l $go_files)
+    if [ -n "$unformatted" ]; then
+      echo "gofmt needed, run: gofmt -w $unformatted"
+      exit 1
+    fi
+  fi
+  go vet ./...
+fi
+
+web=web/inventory_management_portal
+if grep -q "^$web/" <<<"$changed" && [ -f "$web/package.json" ]; then
+  pnpm --dir "$web" run --if-present lint
+  pnpm --dir "$web" run --if-present check
+fi
