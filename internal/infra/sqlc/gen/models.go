@@ -35,8 +35,17 @@ type AuthSession struct {
 	CreatedAt       pgtype.Timestamptz
 }
 
+type Org struct {
+	ID        pgtype.UUID
+	Name      string
+	Domain    string
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+}
+
 type User struct {
 	ID         pgtype.UUID
+	OrgID      pgtype.UUID
 	Email      string
 	VerifiedAt pgtype.Timestamptz
 	CreatedAt  pgtype.Timestamptz

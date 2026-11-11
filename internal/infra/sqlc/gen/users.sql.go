@@ -11,26 +11,8 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const findOrCreateUser = `-- name: FindOrCreateUser :one
-INSERT INTO users (email) VALUES ($1)
-ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email
-RETURNING id, email, verified_at, created_at
-`
-
-func (q *Queries) FindOrCreateUser(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRow(ctx, findOrCreateUser, email)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Email,
-		&i.VerifiedAt,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, verified_at, created_at FROM users WHERE email = $1
+SELECT id, org_id, email, verified_at, created_at FROM users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -38,6 +20,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	var i User
 	err := row.Scan(
 		&i.ID,
+		&i.OrgID,
 		&i.Email,
 		&i.VerifiedAt,
 		&i.CreatedAt,
@@ -46,7 +29,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, email, verified_at, created_at FROM users WHERE id = $1
+SELECT id, org_id, email, verified_at, created_at FROM users WHERE id = $1
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, id pgtype.UUID) (User, error) {
@@ -54,6 +37,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id pgtype.UUID) (User, error)
 	var i User
 	err := row.Scan(
 		&i.ID,
+		&i.OrgID,
 		&i.Email,
 		&i.VerifiedAt,
 		&i.CreatedAt,

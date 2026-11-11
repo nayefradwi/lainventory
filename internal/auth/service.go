@@ -105,7 +105,11 @@ func (svc AuthService) verifyCode(ctx context.Context, req VerifyCodeRequest) (a
 		return auth.TokenDTO{}, err
 	}
 
-	user, err := svc.q.FindOrCreateUser(ctx, req.Email)
+	user, err := svc.q.GetUserByEmail(ctx, req.Email)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return auth.TokenDTO{}, ErrUserNotFound
+	}
+
 	if err != nil {
 		return auth.TokenDTO{}, err
 	}

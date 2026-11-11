@@ -1,6 +1,15 @@
 -- +goose Up
+CREATE TABLE orgs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL DEFAULT '',
+    domain TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    org_id UUID NOT NULL REFERENCES orgs(id),
     email TEXT NOT NULL UNIQUE,
     verified_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -43,3 +52,4 @@ DROP TABLE auth_otps;
 DROP TABLE auth_sessions;
 DROP TABLE auth_attempts;
 DROP TABLE users;
+DROP TABLE orgs;
