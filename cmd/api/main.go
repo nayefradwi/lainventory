@@ -1,0 +1,10 @@
+package main
+
+import (
+	"context"
+)
+
+func main() {
+	appCtx := context.Background()
+	bootstrap(appCtx)
+}

@@ -1,0 +1,13 @@
+service_type: REST
+infra:
+    - postgresql
+    - redis
+auth:
+    identifier: email
+    login: otp
+    mfa: false
+    access_token: opaque
+    store: postgresql
+features:
+    - Locking
+    - Pagination
