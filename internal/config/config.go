@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/joho/godotenv"
+	"github.com/nayefradwi/lainventory/internal/auth"
 	"os"
 )
 
@@ -18,6 +19,7 @@ type Config struct {
 	Address     string
 	DatabaseUrl string
 	RedisUrl    string
+	Auth        auth.AuthConfig
 }
 
 func NewConfig() Config {
@@ -27,10 +29,21 @@ func NewConfig() Config {
 		address = ":4000"
 	}
 
+	databaseUrl := os.Getenv("GOOSE_DBSTRING")
+	if databaseUrl == "" {
+		panic("GOOSE_DBSTRING is required")
+	}
+
+	redisUrl := os.Getenv("REDIS_URL")
+	if redisUrl == "" {
+		panic("REDIS_URL is required")
+	}
+
 	return Config{
 		Environment: Environment(os.Getenv("ENVIRONMENT")),
 		Address:     address,
-		DatabaseUrl: os.Getenv("GOOSE_DBSTRING"),
-		RedisUrl:    os.Getenv("REDIS_URL"),
+		DatabaseUrl: databaseUrl,
+		RedisUrl:    redisUrl,
+		Auth:        auth.NewAuthConfig(),
 	}
 }

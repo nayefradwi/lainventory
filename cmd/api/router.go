@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	appauth "github.com/nayefradwi/lainventory/internal/auth"
 	"github.com/nayefradwi/lainventory/internal/di"
 	"github.com/nayefradwi/lainventory/internal/health"
 	"github.com/nayefradwi/nayef_go_common/pagination"
@@ -39,6 +40,7 @@ func (ar router) setup() {
 	ar.mux.Use(middleware.StripSlashes)
 	ar.mux.Use(pagination.SetOffsetPaginationMiddleware)
 	ar.mux.Get("/health", health.HealthCheck)
+	ar.mux.Mount("/auth", appauth.NewAuthHandler(ar.di.Auth.Service).Routes(ar.di.Auth.Authenticate, ar.di.Auth.RateLimit))
 }
 
 func (ar router) connect(cancel context.CancelFunc) {

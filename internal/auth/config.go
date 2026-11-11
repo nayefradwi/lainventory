@@ -7,7 +7,12 @@ type AuthConfig struct {
 }
 
 func NewAuthConfig() AuthConfig {
+	otpSecret := os.Getenv("OTP_SECRET")
+	if otpSecret == "" {
+		panic("OTP_SECRET is required")
+	}
+
 	return AuthConfig{
-		OtpSecret: os.Getenv("OTP_SECRET"),
+		OtpSecret: otpSecret,
 	}
 }
